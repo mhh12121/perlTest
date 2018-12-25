@@ -3,6 +3,7 @@ use Mojo::Base 'Mojolicious::Controller';
 use strict;
 use warnings;
 use Cal;
+
 # This action will render a template
 sub welcome {
   my $self = shift;
@@ -19,8 +20,7 @@ sub calFromWeb{
   my $op=$self->param('op');
   my $num1= $self->param('num1');
   my $num2=$self->param('num2');
- 
-  print ("num2:",$num2);
+  
   my $result=Cal::cal($op,$num1,$num2);
   
   return $self->render(text=>$result);

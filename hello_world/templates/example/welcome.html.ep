@@ -48,7 +48,6 @@
         let cal=[];
         let opnum=0;
         let tmpop;
-        let global=$('#result').text();//temporary
         let tmpnum1=0;
         let tmpnum2=null;
         let dataresult=null;
@@ -117,11 +116,12 @@
         let process=false;
         function cal_equal(){
           if (tmpop==null){
+            alert("at least one operator!");
             console.log("at least one operator!");
             return;
           }
           
-          if (!process){
+          if (!process && opnum!=0 ){
             process=true;
             opnum=0;
             tmpnum2=Number(cal.join(''));
@@ -130,16 +130,18 @@
                 type:'POST',
                 url:'<%= url_for 'calsth' %>',
                 dataType: 'json',
-                data:{num1:tmpnum1,num2:tmpnum2,op:tmpop},
+                data:{op:tmpop,num1:tmpnum1,num2:tmpnum2},
                 success: function(json){
                     result.text( json );
-                    global=json;
-                    dataresult=json;
+                    if (json!="zeroError" && json!="formatError"){
+                      dataresult=json;
+                    }
+                    
                     console.log("result:",json);
                     
                 },
                 error: function(){
-                  result.html( "error");
+                  result.html( "Error?");
                   
                 },
                 complete:function(){
