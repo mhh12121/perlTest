@@ -16,8 +16,8 @@ Though there're load of bugs...but this is just for getting familiar with Perl;
 1. ```git clone https://github.com/mhh12121/perlTest.git```
 2. ``` make install ```
 3. Front-end: ``` morbo /script/hello_world ``` then you can access it through localhost:3000 
-4. under ```/script``` run ```perl commandCal.pl [op] [num1] [num2]```
-op is the operator, num1 is left side number and num2 is the other number
+4. under ```/script``` run ```perl commandCal.pl``` then follow the instruction
+
 
 ## Todo
 Add Regular Expression Calculation;
