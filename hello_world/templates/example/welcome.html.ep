@@ -1,0 +1,165 @@
+% layout 'default';
+% title 'Welcome';
+<h2><%= $msg %></h2>
+<p>
+  Well...actually some bugs here, like: cannot continuously do operator, for example:enter 1+1+1 won't work;
+  <%= link_to 'click here' => url_for %> to reload the page or
+  <%= link_to 'here' => '/index.html' %> to move forward to a static page.
+</p>
+<div id="calculator" class="calculator">
+  
+  <button id="clear" class="clear">C</button>
+  <div id="currentOp" ></div>
+  <div id="result" class="result">0</div>
+  
+  <button class="num" data-num="7">7</button>
+  <button class="num" data-num="8">8</button>
+  <button class="num" data-num="9">9</button>
+  <button data-ops="+" class="ops">+</button>
+
+  <button class="num" data-num="4">4</button>
+  <button class="num" data-num="5">5</button>
+  <button class="num" data-num="6">6</button>
+  <button data-ops="-" class="ops">-</button>
+
+  <button class="num" data-num="1">1</button>
+  <button class="num" data-num="2">2</button>
+  <button class="num" data-num="3">3</button>
+  <button data-ops="*" class="ops">*</button>
+
+  
+
+  <button class="num" data-num="0">0</button>
+  <button class="num" data-num=".">.</button>
+  <button id="equals" class="equals" data-result="">=</button>
+  <button data-ops="/" class="ops">/</button>
+  <button data-ops="%" class="ops">%</button>
+  <button data-ops="!" class="ops">!</button>
+</div>
+
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+      
+        var result=$('#result');
+        var currentOp=$('#currentOp');
+        let cal=[];
+        let opnum=0;
+        let tmpop;
+        let global=$('#result').text();//temporary
+        let tmpnum1=0;
+        let tmpnum2=null;
+        let dataresult=null;
+        let log=$('#result').text();
+        $('#clear').on("click",function(){
+          cal=[];
+          tmpnum1=null;
+          tmpnum2=null;
+          dataresult=null;
+          result.text(0);
+          currentOp.text();
+        });
+
+        $('.num').click(function(){
+          let num=$(this).attr('data-num');
+          if (num==0 && cal.length==0){
+            return;
+          }
+          if (opnum==0){
+            $('#result').text();
+          }
+          if (num=='.' && cal.length==0){
+            cal.push(0);
+          }
+          cal.push(num);
+          $('#result').text(cal.join(''));
+          console.log(num);
+        })
+        
+        $('.ops').click(function(){
+
+          tmpop=$(this).attr('data-ops');
+          currentOp.text(tmpop);
+          console.log("operator:",tmpop);
+          if (opnum!=0&&dataresult!=null && tmpnum2!=null && tmpop!='factorial'){
+            //$('#result').text(0);//clear result;
+            //equal();
+            tmpnum1=dataresult;
+            cal_equal();
+            console.log("now only support two operator");
+            return;
+          }
+          //$('#result').text();//clear result;
+          
+          
+          if (opnum==0){
+            if (dataresult!=null&&cal.length==0){
+              tmpnum1=dataresult;
+            }else{
+              tmpnum1=Number(cal.join(''));
+            }
+            
+          }else if(opnum!=0 && tmpop=='factorial'){
+            if (dataresult<0){
+              alert("negative numbers don't have factorial!");
+              return;
+            }
+            alert("wrong,please clear it");
+            console.log("opnum=1,op will do above condition things");
+          }
+          cal=[];
+          opnum++;
+
+        })
+
+        let process=false;
+        function cal_equal(){
+          if (tmpop==null){
+            console.log("at least one operator!");
+            return;
+          }
+          
+          if (!process){
+            process=true;
+            opnum=0;
+            tmpnum2=Number(cal.join(''));
+            console.log("equal",tmpnum1,tmpnum2,tmpop);
+            $.ajax({  
+                type:'POST',
+                url:'<%= url_for 'calsth' %>',
+                dataType: 'json',
+                data:{num1:tmpnum1,num2:tmpnum2,op:tmpop},
+                success: function(json){
+                    result.text( json );
+                    global=json;
+                    dataresult=json;
+                    console.log("result:",json);
+                    
+                },
+                error: function(){
+                  result.html( "error");
+                  
+                },
+                complete:function(){
+                  process=false;
+                  tmpnum1=null;
+                  tmpnum2=null;
+                  cal=[];
+                  console.log("comnplete");
+                  currentOp.html("");
+                }
+            });
+          }
+          
+        }
+        $('#equals').on("click",function(){
+          cal_equal();
+        });
+            
+        
+    });  
+
+
+</script>
